@@ -1,0 +1,15 @@
+{
+  "name": "Frédérique — Le Chant de Marins au Féminin",
+  "short_name": "Frédérique",
+  "description": "Chanteuse de chants de marins : Bretagne, Irlande, ports du Nord. Écoutes, album Irish Ties, presse, contact.",
+  "lang": "fr",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "minimal-ui",
+  "background_color": "#f4efe4",
+  "theme_color": "#16323f",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

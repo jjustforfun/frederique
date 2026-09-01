@@ -1,0 +1,85 @@
+---
+/**
+ * Biographie — texte d’origine conservé, ports-chantiers en balises,
+ * et les deux clips (façades YouTube) pour voir la scène.
+ */
+import { BIO, VIDEOS } from '../data/site';
+import LiteYouTube from './LiteYouTube.astro';
+---
+
+<section id="biographie" class="bio" aria-labelledby="bio-title">
+  <div class="wrap bio__grid">
+    <div class="bio__text">
+      <header class="section-head">
+        <p class="kicker">La fille du large</p>
+        <h2 id="bio-title">Une vie au bord de l’eau</h2>
+      </header>
+
+      {BIO.paragraphs.map((p) => <p>{p}</p>)}
+
+      <blockquote>
+        <p>« Quand je suis parti de La Rochelle, pour m’en aller à Terre-Neuve… »</p>
+        <cite>Chant traditionnel maritime, repris dans son clip</cite>
+      </blockquote>
+
+      <h3 class="bio__ports-title">Les ports de son répertoire</h3>
+      <ul class="chips" aria-label="Ports et villes chantés par Frédérique">
+        {BIO.ports.map((port) => <li>{port}</li>)}
+      </ul>
+    </div>
+
+    <div class="bio__videos">
+      <h3 class="bio__videos-title">Sur l’eau, en images</h3>
+      {VIDEOS.map((v) => <LiteYouTube id={v.id} title={v.title} caption={v.caption} />)}
+    </div>
+  </div>
+
+  <style>
+    .bio__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(2rem, 5vw, 3.5rem);
+    }
+
+    @media (min-width: 58rem) {
+      .bio__grid { grid-template-columns: 1.15fr 0.85fr; align-items: start; }
+      .bio__videos { position: sticky; top: calc(var(--header-h) + 1.5rem); }
+    }
+
+    .bio__text p { max-width: 62ch; }
+
+    .bio blockquote {
+      margin: 1.6rem 0;
+      padding: 0.2rem 0 0.2rem 1.2rem;
+      border-left: 3px solid var(--accent);
+      font-family: 'Fraunces Variable', Georgia, serif;
+      font-style: italic;
+      font-size: 1.18rem;
+      color: var(--muted);
+    }
+
+    .bio blockquote p { margin: 0; }
+
+    .bio blockquote cite {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.8rem;
+      font-style: normal;
+      letter-spacing: 0.02em;
+      opacity: 0.8;
+    }
+
+    .bio__ports-title,
+    .bio__videos-title {
+      margin-block: 1.4rem 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .bio__videos-title { margin-block: 0 0.9rem; }
+
+    .bio__videos {
+      display: grid;
+      gap: 1rem;
+    }
+  </style>
+</section>

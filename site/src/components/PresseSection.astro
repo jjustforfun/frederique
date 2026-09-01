@@ -1,0 +1,95 @@
+---
+/**
+ * Presse — coupures, affiches et vinyles scannés, repris de l’ancienne
+ * page « Presse ». Galerie respectueuse du clavier, pas de lightbox lourde :
+ * les images s’ouvrent seules en plein écran sur clic (lien direct).
+ */
+import { PRESS } from '../data/press';
+---
+
+<section id="presse" class="press" aria-labelledby="press-title">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">Dans le journal du bord</p>
+      <h2 id="press-title">Presse & archives</h2>
+    </header>
+
+    <p class="press__lede">
+      Ce que <em>Mission bretonne</em>, <em>Publico</em>, <em>France Bleu Breizh Izel</em> et les
+      murs des ports ont écrit d’elle — planches de vinyles, extraits et affiches
+      d’époque, numérisés depuis le site d’origine.
+    </p>
+
+    <ul class="press__grid">
+      {PRESS.map((item) => (
+        <li class={item.wide ? 'press__wide' : undefined}>
+          <a href={item.src} target="_blank" rel="noopener" class="press__card" aria-label={`Agrandir : ${item.caption}`}>
+            <img
+              src={item.src}
+              width={item.width}
+              height={item.height}
+              loading="lazy"
+              decoding="async"
+              alt={item.alt}
+            />
+            <span class="press__cap">{item.caption}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <style>
+    .press {
+      background:
+        linear-gradient(180deg, transparent 0, var(--surface-2) 22%, var(--surface-2) 78%, transparent 100%);
+    }
+
+    .press__lede { max-width: 62ch; margin-bottom: 2rem; }
+
+    .press__grid {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.5rem), 1fr));
+      gap: 1rem;
+    }
+
+    .press__wide { grid-column: 1 / -1; }
+
+    .press__card {
+      display: grid;
+      text-decoration: none;
+      color: inherit;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 26px -18px rgba(22, 50, 63, 0.5);
+      transition: translate 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .press__card:hover {
+      translate: 0 -3px;
+      box-shadow: var(--shadow);
+    }
+
+    .press__card img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .press__wide .press__card img { aspect-ratio: 21 / 9; object-fit: cover; }
+
+    .press__cap {
+      padding: 0.65rem 0.9rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+  </style>
+</section>

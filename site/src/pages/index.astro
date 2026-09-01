@@ -1,0 +1,52 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import BioSection from '../components/BioSection.astro';
+import AudioPlaylist from '../components/AudioPlaylist.astro';
+import AlbumSection from '../components/AlbumSection.astro';
+import SpectaclesSection from '../components/SpectaclesSection.astro';
+import PresseSection from '../components/PresseSection.astro';
+import AquarelSection from '../components/AquarelSection.astro';
+import FaqSection from '../components/FaqSection.astro';
+import ContactSection from '../components/ContactSection.astro';
+import { SITE } from '../data/site';
+
+const title = `${SITE.name} — ${SITE.tagline} · Chants de marins de Bretagne`;
+const description = SITE.description;
+---
+
+<Layout title={title} description={description}>
+  <Header />
+
+  <main id="contenu">
+    <Hero />
+
+    <BioSection />
+
+    <section id="ecouter" class="listen" aria-labelledby="listen-title">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="kicker">La cabine d’écoute</p>
+          <h2 id="listen-title">Écouter, du pont à la cale</h2>
+        </header>
+        <p class="listen__lede">
+          Dix enregistrements publics — chants de la mer, ballade en breton, extraits du
+          spectacle, et l’interview sur France Bleu Breizh Izel. Lecture immédiate, aucun
+          compte, aucun pisteurs : le son vient des archives de {SITE.name}.
+        </p>
+        <AudioPlaylist />
+      </div>
+      <style>
+        .listen__lede { max-width: 62ch; margin-bottom: 2rem; }
+      </style>
+    </section>
+
+    <AlbumSection />
+    <SpectaclesSection />
+    <PresseSection />
+    <AquarelSection />
+    <FaqSection />
+    <ContactSection />
+  </main>
+</Layout>

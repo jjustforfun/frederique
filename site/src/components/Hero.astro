@@ -1,0 +1,186 @@
+---
+/**
+ * Hero — « La mer », le jour comme la nuit.
+ * Fond : dégradé de ciel + aquarelle de mer (image générée, chargée via CSS
+ * selon le thème) + étoiles CSS (nuit) + vagues SVG dérivantes.
+ */
+import { SITE, BIO } from '../data/site';
+---
+
+<section class="hero sea" id="accueil" aria-labelledby="hero-title">
+  <div class="hero__sky" aria-hidden="true">
+    <span class="stars"><i></i></span>
+    <span class="moon" aria-hidden="true"></span>
+  </div>
+
+  <div
+    class="hero-art"
+    aria-hidden="true"
+    style={'--day: url(/img/mer-jour.jpg); --night: url(/img/mer-nuit.jpg);'}
+  ></div>
+
+  <div class="hero__content">
+    <p class="hero__kicker">{SITE.base} · {SITE.origin}</p>
+    <h1 id="hero-title">
+      Bretonne d’origine,<br />
+      Frédérique <em>chante la Mer</em>
+    </h1>
+    <p class="hero__lead">
+      {BIO.lead}
+    </p>
+    <p class="hero__sub">{SITE.tagline} — {SITE.nickname}</p>
+
+    <div class="hero__actions">
+      <a class="btn btn--primary" href="#ecouter">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>
+        Écouter, tout de suite
+      </a>
+      <a class="btn btn--ghost" href="#contact">Réserver un concert</a>
+    </div>
+
+    <a class="hero__scroll" href="#biographie">
+      <span class="sr-only">Descendre vers la biographie</span>
+      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+        <path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+    </a>
+  </div>
+
+  <div class="waves waves--back" aria-hidden="true">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+      <path d="M0 30 Q 75 8 150 30 T 300 30 T 450 30 T 600 30 T 750 30 T 900 30 T 1050 30 T 1200 30 V 60 H 0 Z" fill="var(--foam)"/>
+    </svg>
+  </div>
+  <div class="waves" aria-hidden="true">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+      <path d="M0 34 Q 100 12 200 34 T 400 34 T 600 34 T 800 34 T 1000 34 T 1200 34 V 60 H 0 Z" fill="var(--bg)"/>
+    </svg>
+  </div>
+
+  <style>
+    .hero {
+      position: relative;
+      display: grid;
+      align-items: end;
+      min-height: min(88svh, 56rem);
+      padding-block: calc(var(--header-h) + 4rem) clamp(7rem, 14vw, 12rem);
+      /* Jour : ciel d’Émeraude. Nuit (via tokens) : nuit profonde — même squelette. */
+      background:
+        linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 46%, var(--sea) 78%, var(--sea-deep) 100%);
+      color: var(--text);
+      overflow: clip;
+    }
+
+    /* Sur la mer, on écrit en couleur « écume » pour rester lisible jour et nuit */
+    .hero h1,
+    .hero .hero__kicker,
+    .hero .hero__lead,
+    .hero .hero__sub {
+      color: var(--text);
+    }
+
+    .hero__sky {
+      position: absolute;
+      inset: 0 0 38% 0;
+      pointer-events: none;
+    }
+
+    .hero .stars { inset: 0; }
+
+    .hero-art {
+      top: 32%;
+      height: 68%;
+      background-image: var(--day);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .hero-art {
+        background-image: var(--night);
+        mix-blend-mode: screen;
+        opacity: 0.55;
+      }
+    }
+
+    /* Panneau « écume » : garantit le contraste du texte, posé sur la mer,
+       aussi bien à midi qu’à minuit. */
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      gap: 1rem;
+      justify-items: start;
+      width: min(100% - 2 * var(--gutter), 46rem);
+      margin-inline: auto;
+      padding: clamp(1.4rem, 3.5vw, 2.4rem);
+      padding-block-end: clamp(1.6rem, 4vw, 2.6rem);
+      background: color-mix(in srgb, var(--foam) 86%, transparent);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 6px);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px) saturate(1.15);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .hero__content {
+        background: color-mix(in srgb, var(--surface) 80%, transparent);
+      }
+    }
+
+    .hero__kicker {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero h1 {
+      margin: 0;
+      max-width: 22ch;
+      text-shadow: 0 1px 0 color-mix(in srgb, var(--foam) 70%, transparent);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .hero h1 { text-shadow: 0 2px 24px rgba(0, 0, 20, 0.5); }
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero__lead {
+      max-width: 46ch;
+      margin: 0;
+      font-size: clamp(1.05rem, 1rem + 0.5vw, 1.3rem);
+      color: var(--text);
+    }
+
+    .hero__sub {
+      margin: 0;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-block-start: 0.6rem;
+    }
+
+    .hero__scroll {
+      margin-block-start: clamp(1.2rem, 3vw, 2.2rem);
+      color: var(--muted);
+      animation: bob 2.6s ease-in-out infinite;
+    }
+
+    .hero__scroll:hover { color: var(--accent); }
+
+    @keyframes bob {
+      0%, 100% { translate: 0 0; }
+      50% { translate: 0 6px; }
+    }
+  </style>
+</section>

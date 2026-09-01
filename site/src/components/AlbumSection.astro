@@ -1,0 +1,170 @@
+---
+/**
+ * Album « Irish Ties » — pochette (scannée sur l’ancienne site), tracklist,
+ * faits vérifiés (label, formats) et liens d’écoute officiels.
+ */
+import { ALBUM } from '../data/tracks';
+import { LINKS } from '../data/site';
+import { MEDIA, media } from '../data/media';
+---
+
+<section id="album" class="album sea" aria-labelledby="album-title">
+  <div class="stars" aria-hidden="true"><i></i></div>
+  <div class="wrap album__grid">
+    <figure class="album__cover">
+      <img
+        class="card"
+        src={media(MEDIA.vinylPages.page1)}
+        width="670"
+        height="1024"
+        loading="lazy"
+        decoding="async"
+        alt={`Pochette de l’album « ${ALBUM.title} » de ${ALBUM.artist} : port de nuit, cordages et voiles`}
+      />
+      <figcaption>
+        Pochette — <em>{ALBUM.title}</em>, {ALBUM.label}
+      </figcaption>
+    </figure>
+
+    <div class="album__body">
+      <header class="section-head">
+        <p class="kicker">L’album</p>
+        <h2 id="album-title">{ALBUM.title}</h2>
+      </header>
+
+      <p class="album__lede">{ALBUM.description}</p>
+
+      <dl class="album__facts card">
+        <div><dt>Sortie</dt><dd>{ALBUM.year} <small>(CD {ALBUM.reissue})</small></dd></div>
+        <div><dt>Durée</dt><dd>{ALBUM.duration} · {ALBUM.tracks.length} titres</dd></div>
+        <div><dt>Label</dt><dd>{ALBUM.label}</dd></div>
+        <div><dt>CD</dt><dd>{ALBUM.cdLabel}</dd></div>
+      </dl>
+
+      <ol class="album__tracks" aria-label="Liste des titres de l’album">
+        {ALBUM.tracks.map((t) => (
+          <li>
+            <span class="album__n" aria-hidden="true">{String(t.n).padStart(2, '0')}</span>
+            <span class="album__t">{t.title}</span>
+            <time>{t.duration}</time>
+          </li>
+        ))}
+      </ol>
+
+      <div class="album__actions">
+        <a class="btn btn--primary" href={LINKS.deezerAlbum} rel="noopener" target="_blank">Écouter sur Deezer</a>
+        <a class="btn btn--ghost" href={LINKS.amazonAlbum} rel="noopener" target="_blank">Album numérique (Amazon)</a>
+        <a class="btn btn--ghost" href={LINKS.cdDistributeur} rel="noopener" target="_blank">Le CD (Regain)</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="waves" aria-hidden="true">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+      <path d="M0 34 Q 100 12 200 34 T 400 34 T 600 34 T 800 34 T 1000 34 T 1200 34 V 60 H 0 Z" fill="var(--bg)"/>
+    </svg>
+  </div>
+
+  <style>
+    .album {
+      position: relative;
+      padding-block: clamp(4rem, 8vw, 7rem);
+      color: #eef4f6;
+      /* Bande pleine mer : on part d’un bleu moyen assez sombre pour que
+         l’encre claire reste ≥ AA en tout point du dégradé, jour comme nuit. */
+      background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--sea) 45%, var(--sea-deep)) 0%,
+        var(--sea-deep) 62%
+      );
+    }
+
+    /* Sur la mer (jour comme nuit), on garde une encre claire lisible :
+       la section « album » est toujours la pleine mer. */
+    .album h2, .album h3, .album p, .album dt, .album dd, .album li { color: #eef4f6; }
+    .album .kicker { color: var(--gold-band); }
+    .album .section-head::after { background: linear-gradient(90deg, rgba(238,244,246,0.75), transparent); }
+
+    .album__grid {
+      display: grid;
+      gap: clamp(2rem, 5vw, 4rem);
+      grid-template-columns: 1fr;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (min-width: 56rem) {
+      .album__grid { grid-template-columns: 0.8fr 1.2fr; align-items: start; }
+      .album__cover { position: sticky; top: calc(var(--header-h) + 1.5rem); }
+    }
+
+    .album__cover { margin: 0; max-width: 24rem; }
+
+    .album__cover img {
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      aspect-ratio: 670 / 1024;
+      object-fit: cover;
+    }
+
+    .album__cover figcaption {
+      margin-top: 0.7rem;
+      font-size: 0.83rem;
+      opacity: 0.85;
+    }
+
+    .album__lede { max-width: 60ch; }
+
+    .album__facts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+      gap: 0.75rem;
+      margin: 1.2rem 0 1.6rem;
+      padding: 1rem 1.2rem;
+    }
+
+    .album__facts dt {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #a9c1cf;
+    }
+
+    .album__facts dd {
+      margin: 0.15rem 0 0;
+      font-weight: 600;
+    }
+
+    .album__facts dd small { font-weight: 400; opacity: 0.8; }
+
+    .album__tracks {
+      list-style: none;
+      margin: 0 0 1.6rem;
+      padding: 0;
+      columns: 2;
+      column-gap: 2.5rem;
+      max-width: 46rem;
+    }
+
+    .album__tracks li {
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px dashed rgba(238, 244, 246, 0.25);
+      break-inside: avoid;
+      font-size: 0.94rem;
+    }
+
+    .album__n { color: #a9c1cf; font-variant-numeric: tabular-nums; font-size: 0.8rem; }
+    .album__t { flex: 1; }
+    .album__tracks time { opacity: 0.75; font-variant-numeric: tabular-nums; font-size: 0.82rem; }
+
+    @media (max-width: 40rem) { .album__tracks { columns: 1; } }
+
+    .album__actions { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+
+    .album .btn--ghost { color: #eef4f6; border-color: rgba(238, 244, 246, 0.4); background: rgba(255,255,255,0.06); }
+    .album .btn--ghost:hover { border-color: var(--gold-band); color: var(--gold-band); }
+  </style>
+</section>
