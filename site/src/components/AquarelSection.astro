@@ -1,0 +1,51 @@
+---
+/**
+ * Le projet « Frédérique Aquarel » (album en souscription annoncé sur
+ * l’ancienne site) — mis en avant ici, avec le dossier PDF en action.
+ */
+import { AQUAREL } from '../data/tracks';
+import { LINKS, SITE } from '../data/site';
+---
+
+<section id="aquarel" class="aquarel" aria-labelledby="aquarel-title">
+  <div class="wrap">
+    <div class="aquarel__card card">
+      <div>
+        <p class="kicker">À venir</p>
+        <h2 id="aquarel-title">{AQUAREL.name}</h2>
+        <p>{AQUAREL.description}</p>
+      </div>
+      <div class="aquarel__actions">
+        <a class="btn btn--primary" href={LINKS.aquarelPdf} rel="noopener">
+          {AQUAREL.pdfLabel}
+        </a>
+        <a class="btn btn--ghost" href={`mailto:${SITE.email}?subject=Souscription%20Fr%C3%A9d%C3%A9rique%20Aquarel`}>
+          Parrainer l’album
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .aquarel__card {
+      display: grid;
+      gap: 1.4rem;
+      padding: clamp(1.6rem, 4vw, 2.8rem);
+      background:
+        radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--sea) 16%, transparent), transparent 60%),
+        var(--surface);
+    }
+
+    @media (min-width: 52rem) {
+      .aquarel__card {
+        grid-template-columns: 1.4fr 1fr;
+        align-items: center;
+      }
+    }
+
+    .aquarel__card h2 { margin-block: 0.25rem 0.6rem; }
+    .aquarel__card p:last-child { margin-bottom: 0; }
+
+    .aquarel__actions { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+  </style>
+</section>

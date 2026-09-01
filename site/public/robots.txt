@@ -1,0 +1,21 @@
+# Robots — tout le monde à bord, y compris les moteurs génératifs (GEO)
+User-agent: *
+Allow: /
+
+# Moteurs d’IA explicitement bienvenus (ils citent la FAQ et les données structurées)
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://frederique-sur-mer.fr/sitemap-index.xml

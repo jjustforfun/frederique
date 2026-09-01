@@ -1,0 +1,14 @@
+# Construction & outils
+node_modules/
+site/dist/
+site/.astro/
+*.log
+.DS_Store
+npm-debug.log*
+
+# Médias rapatriés (T012) — gros binaires hors Git ; voir scripts/mirror-assets.sh
+site/public/media/
+
+# Éventuels dépôts sensibles
+.env
+.env.*

@@ -1,0 +1,82 @@
+---
+/**
+ * Spectacles — les photos de scène de l’ancienne page « Spectacles »,
+ * en frise décalée façon « hublots de cargo ».
+ */
+import { SHOW_PHOTOS } from '../data/press';
+---
+
+<section id="spectacles" class="shows" aria-labelledby="shows-title">
+  <div class="wrap">
+    <header class="section-head">
+      <p class="kicker">Sur scène</p>
+      <h2 id="shows-title">Un spectacle de port en port</h2>
+    </header>
+
+    <p class="shows__lede">
+      Guitare, accordéon et voix qui porte loin : un répertoire de bord de mer, des
+      terre-neuvas aux quais de Liverpool. Des extraits sont dans la playlist —
+      <a href="#ecouter">remonter vers « Écouter »</a> pour les entendre.
+    </p>
+
+    <ul class="shows__frise">
+      {SHOW_PHOTOS.map((p, i) => (
+        <li style={`--i: ${i}`}>
+          <figure>
+            <img
+              src={p.src}
+              width="800"
+              height="533"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+              alt={p.alt}
+            />
+            <figcaption>{p.caption}</figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <style>
+    .shows__lede { max-width: 60ch; margin-bottom: 2rem; }
+
+    .shows__frise {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
+      gap: 1.1rem;
+    }
+
+    .shows__frise figure {
+      margin: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .shows__frise img {
+      width: 100%;
+      aspect-ratio: 3 / 2;
+      object-fit: cover;
+      transition: scale 0.35s ease;
+    }
+
+    .shows__frise figure:hover img { scale: 1.04; }
+
+    .shows__frise figcaption {
+      padding: 0.7rem 0.95rem 0.8rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Décalage en quinconce, façon hunes sur une coque */
+    @media (min-width: 48rem) {
+      .shows__frise li:nth-child(even) { translate: 0 1.6rem; }
+    }
+  </style>
+</section>

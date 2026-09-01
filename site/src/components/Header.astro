@@ -1,0 +1,214 @@
+---
+/**
+ * En-tête collant.
+ *   • Desktop  : <nav> en ligne, toujours visible.
+ *   • Mobile   : même liste dans un menu hamburger natif <details> (ARIA/clavier
+ *     gratuits, zéro JS pour l'ouvrir).
+ * Un soupçon de JS ajoute l’état « section active » (aria-current) au scroll.
+ */
+import { NAV, SITE } from '../data/site';
+---
+
+<header class="site-header" id="haut">
+  <div class="site-header__inner wrap">
+    <a class="brand" href="#accueil" aria-label={`${SITE.name} — retour en haut de page`}>
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <!-- Voile rouge sur une vague, l’étoile de la mer -->
+        <path d="M16 3 L16 21 L6.5 21 Z" fill="var(--accent)"></path>
+        <path d="M18 8 L25.5 21 L18 21 Z" fill="currentColor" opacity="0.85"></path>
+        <path d="M2 25.5 Q 6.5 22 11 25.5 T 20 25.5 T 29.5 25.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+      </svg>
+      <span class="brand__text">
+        <strong>{SITE.name}</strong>
+        <small>{SITE.tagline}</small>
+      </span>
+    </a>
+
+    <!-- Navigation desktop -->
+    <nav aria-label="Navigation principale" class="nav nav--desktop">
+      <ul>
+        {NAV.map((item) => (
+          <li><a href={item.href} data-nav-link>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- Navigation mobile : <details> natif -->
+    <details class="nav-disclosure">
+      <summary>
+        <span class="nav-disclosure__label">Menu</span>
+        <span class="nav-disclosure__bars" aria-hidden="true"></span>
+      </summary>
+      <nav aria-label="Navigation principale (menu mobile)" class="nav nav--mobile">
+        <ul>
+          {NAV.map((item) => (
+            <li><a href={item.href} data-nav-link>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </div>
+  <style>
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: color-mix(in srgb, var(--bg) 86%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .site-header__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: var(--header-h);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand__mark {
+      width: 2rem;
+      height: 2rem;
+      color: var(--text);
+    }
+
+    .brand__text {
+      display: grid;
+      line-height: 1.15;
+    }
+
+    .brand__text strong {
+      font-family: 'Fraunces Variable', Georgia, serif;
+      font-size: 1.12rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .brand__text small {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .nav ul {
+      display: flex;
+      gap: clamp(0.6rem, 1.8vw, 1.6rem);
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex-wrap: wrap;
+    }
+
+    .nav a {
+      display: inline-block;
+      padding: 0.45em 0.2em;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav a:hover,
+    .nav a[aria-current='true'] {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ----- Bascule : une seule des deux navigations est visible ----- */
+    .nav--desktop { display: block; }
+    .nav-disclosure { display: none; }
+
+    @media (max-width: 46rem) {
+      .nav--desktop { display: none; }
+      .nav-disclosure { display: block; position: relative; }
+
+      .nav-disclosure summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55em 0.9em;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text);
+        background: var(--surface);
+        list-style: none;
+        cursor: pointer;
+      }
+
+      .nav-disclosure summary::-webkit-details-marker { display: none; }
+
+      .nav-disclosure__bars {
+        width: 1.05rem;
+        height: 0.8rem;
+        background:
+          linear-gradient(var(--text), var(--text)) 0 0 / 100% 2px no-repeat,
+          linear-gradient(var(--text), var(--text)) 0 50% / 100% 2px no-repeat,
+          linear-gradient(var(--text), var(--text)) 0 100% / 100% 2px no-repeat;
+        transition: rotate 0.2s ease;
+      }
+
+      .nav-disclosure[open] .nav-disclosure__bars { rotate: 45deg; }
+
+      .nav--mobile {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 0.5rem);
+        min-width: 12.5rem;
+        padding: 0.65rem 0.9rem;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+      }
+
+      .nav--mobile ul {
+        flex-direction: column;
+        gap: 0.1rem;
+      }
+
+      .nav--mobile a { width: 100%; }
+    }
+  </style>
+
+  <script>
+    // « Section active » dans la nav : IntersectionObserver, aucun layout thrash.
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'));
+    if (links.length && 'IntersectionObserver' in window) {
+      const byId = new Map(links.map((l) => [l.hash.slice(1), l]));
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            for (const l of links) l.removeAttribute('aria-current');
+            byId.get(e.target.id)?.setAttribute('aria-current', 'true');
+          }
+        },
+        { rootMargin: '-40% 0px -55% 0px' }
+      );
+      for (const id of new Set(links.map((l) => l.hash.slice(1)))) {
+        const el = document.getElementById(id);
+        if (el) io.observe(el);
+      }
+      // Fermer le tiroir mobile après un choix.
+      document
+        .querySelector('.nav-disclosure')
+        ?.addEventListener('click', (ev) => {
+          if ((ev.target as HTMLElement).closest('a')) {
+            (ev.currentTarget as HTMLDetailsElement).open = false;
+          }
+        });
+    }
+  </script>
+</header>

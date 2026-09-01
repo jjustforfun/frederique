@@ -1,0 +1,156 @@
+---
+import '@fontsource-variable/fraunces/standard.css';
+import '@fontsource-variable/fraunces/standard-italic.css';
+import '@fontsource/work-sans/400.css';
+import '@fontsource/work-sans/600.css';
+import '@fontsource/work-sans/700.css';
+import '../styles/global.css';
+import { SITE, LINKS } from '../data/site';
+import { ALBUM, TRACKS, trackUrl } from '../data/tracks';
+import { FAQ } from '../data/faq';
+
+interface Props {
+  title: string;
+  description: string;
+  /** OG image, relative au site. */
+  ogImage?: string;
+}
+
+const {
+  title,
+  description,
+  ogImage = '/img/couverture-og.jpg',
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogUrl = new URL(ogImage, Astro.site);
+
+/* ------------------------------------------------------------------ */
+/* JSON-LD : graphe d’entités (SEO + GEO — les IA citent les données   */
+/* structurées).  Composées depuis src/data, jamais codées en dur.    */
+/* ------------------------------------------------------------------ */
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${Astro.site}#website`,
+      url: `${Astro.site}`,
+      name: `${SITE.name} — ${SITE.tagline}`,
+      inLanguage: 'fr-FR',
+      publisher: { '@id': `${Astro.site}#person` },
+    },
+    {
+      '@type': ['Person', 'MusicGroup'],
+      '@id': `${Astro.site}#person`,
+      name: SITE.name,
+      alternateName: 'Fred la Rouge',
+      description: SITE.description,
+      url: `${Astro.site}`,
+      email: `mailto:${SITE.email}`,
+      telephone: SITE.phone,
+      jobTitle: 'Chanteuse de chants de marins',
+      genre: ['Chant de marins', 'Musique bretonne', 'Chanson traditionnelle'],
+      homeLocation: SITE.base,
+      birthPlace: { '@type': 'Place', name: SITE.origin },
+      sameAs: [LINKS.youtube, LINKS.amazonAlbum, LINKS.deezerAlbum],
+    },
+    {
+      '@type': 'MusicAlbum',
+      '@id': `${Astro.site}#album-irish-ties`,
+      name: ALBUM.title,
+      byArtist: { '@id': `${Astro.site}#person` },
+      datePublished: `${ALBUM.year}`,
+      recordLabel: { '@type': 'MusicLabel', name: ALBUM.label },
+      musicReleaseFormat: 'https://schema.org/CDFormat',
+      numTracks: ALBUM.tracks.length,
+      timeRequired: 'PT54M',
+    },
+    ...TRACKS.map((t) => ({
+      '@type': 'MusicRecording',
+      '@id': `${Astro.site}#track-${t.id}`,
+      name: t.title,
+      byArtist: { '@id': `${Astro.site}#person` },
+      inAlbum: { '@id': `${Astro.site}#album-irish-ties` },
+      url: trackUrl(t),
+    })),
+    {
+      '@type': 'FAQPage',
+      mainEntity: FAQ.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4efe4" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#081120" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:site_name" content={`${SITE.name} — ${SITE.tagline}`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:alt" content="Mer bretonne à l’aquarelle sous un ciel de nuages, une voile rouge à l’horizon" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+
+    <!-- Icônes & manifeste -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Flux & découverte -->
+    <link rel="alternate" type="application/rss+xml" title="Frédérique — actualités" href={new URL('/rss.xml', Astro.site)} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preconnect" href="https://frederique-sur-mer.fr" crossorigin />
+    <link rel="dns-prefetch" href="https://i.ytimg.com" />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <!-- Marque « JS disponible » avant le 1er rendu : le lecteur améliorable
+         sait alors tout de suite qu’il peut masquer les <audio> natifs. -->
+    <script is:inline>document.documentElement.classList.add('html-js');</script>
+  </head>
+  <body class="page">
+    <a class="skip-link" href="#contenu">Aller au contenu principal</a>
+    <slot />
+    <footer class="site-footer wrap">
+      <p>
+        © {new Date().getFullYear()} {SITE.name} · {SITE.tagline} — Site soigné à la voile,
+        sans cookie ni traqueur. <a href="/rss.xml">Flux RSS</a>
+      </p>
+      <p class="site-footer__note">
+        Pochettes, photos et enregistrements : Frédérique. Enregistrements servis depuis le site
+        d’origine, sauvegardés et re-servis localement en production.
+      </p>
+    </footer>
+    <style is:global>
+      .site-footer {
+        padding-block: 2.25rem 2.75rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+        border-top: 1px solid var(--line);
+      }
+      .site-footer p { margin: 0 0 0.35em; }
+      .site-footer a { color: inherit; }
+      .site-footer__note { opacity: 0.85; }
+    </style>
+  </body>
+</html>

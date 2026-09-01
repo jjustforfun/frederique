@@ -1,0 +1,101 @@
+# Brief structuré — refonte du site de Frédérique
+# (source de vérité des intentions ; référencé par AGENTS.md et tasks.md)
+projet:
+  nom: "Frédérique — Le Chant de Marins au Féminin (refonte 2026)"
+  client: "Frédérique, artiste (surnom « Fred la Rouge »)"
+  site_actuel: "https://frederique-sur-mer.fr"
+  contexte: >
+    Site WordPress 4.5 (2016) : fond cyan « mer », menus devenus incohérents,
+    lecteurs audio bruts, aucune donnée structurée, responsive basique avec
+    menu hamburger. Scores Lighthouse existants : perf 96, SEO 100,
+    best-practices 74, accessibilité 92 — la barre à dépasser.
+
+artiste:
+  identite:
+    prenoms: ["Frédérique"]
+    surnom: "« Fred la Rouge »"
+    origines: "Fille de Saint-Briac, grand-père cap-hornier"
+    base: "La Rochelle"
+    style: ["chant de marins", "traditionnel maritime breton", "chansons irlandaises", "poètes mis en musique"]
+    langues_chant: ["fr", "br", "en"]
+  gouts_et_univers:   # déduits du site et du répertoire — servir CETTE voix, pas une autre
+    poetes: ["Gaston Couté", "Pierre Mac Orlan", "Verlaine", "Rimbaud", "Léo Ferré"]
+    scenes: ["Paimpol", "Douarnenez", "Festival Interceltique de Lorient", "Baltique", "ports d'Amsterdam, Saint-Malo, Brest, Liverpool, Rostock, Valparaíso"]
+    collaborations: ["Gilles Servat", "Michel Tonnerre", "Denez Prigent", "Anne Sylvestre", "Philippe Adrien (théâtre)", "Jean-Pierre Mocky (cinéma/théâtre)"]
+    motifs: ["la mer", "les caps", "les ports", "le cap-hornage", "l'Irlande", "la Bretagne", "l'aquarelle (projet Aquarel)"]
+    ton: "marin, direct, chaleureux, un rien gouailleur — jamais mièvre"
+
+objectifs:
+  - "Moderniser totalement le design sans trahir l'artiste (elle est une voix, pas une startup)"
+  - "Conserver 100 % des contenus existants (textes, 10 MP3, photos, pochettes, presse)"
+  - "Page unique à sections ancrées, responsive exemplaire (le hamburger est un acquis à garder)"
+  - "SEO renforcé + GEO (citable par les moteurs génératifs)"
+  - "Thème jour/nuit 100 % automatique : JOUR = la mer ; NUIT = la mer + étoiles ; aucun bouton"
+
+contraintes:
+  techniques:
+    - "Astro si plus rapide que vanilla (choix retenu — cf. decisions.md ADR-001)"
+    - "Meilleures pratiques web modernes (sept. 2026) : statique, streaming-friendly, CSS layers/nesting/color-mix, TS strict, contenu piloté par données"
+    - "Zéro régression a11y : WCAG 2.2 AA + test de contraste scripté"
+    - "RGPD/e-Privacy : pas de cookie, pas de tracker, polices auto-hébergées, YouTube lite nocookie"
+    - "Réseau du bac à sable : le serveur de l'artiste y est injoignable → médias référencés à la source + scripts/mirror-assets.sh pour l'autonomie"
+  éditoriales:
+    - "Ne jamais inventer un fait ; placeholder documenté si information manquante (PDF Aquarel)"
+    - "Textes d'origine conservés mot pour mot (bio, titres)"
+    - "Langue du site : français"
+
+cibles_de_mesure:
+  lighthouse_mobile: { performance: ">=95", seo: ">=95", accessibilite: ">=95", best_practices: ">=95" }
+  budgets:
+    js_parcours_critique: "< 8 Ko gz"
+    css: "< 25 Ko gz (inline auto pour le critique)"
+    html: "< 80 Ko brut (le CSS critique est inliné dedans ; brotli le rend ~5× plus léger en transit)"
+    images_hero: "< 300 Ko chacune (JPEG progressif 1600px)"
+    cls: "~0 (width/height partout)"
+  seo:
+    - "1 seul h1, hiérarchie stricte, lang fr, canonical, meta description < 160 visibles"
+    - "JSON-LD : WebSite, Person+MusicGroup, MusicAlbum, 10 MusicRecording, FAQPage"
+    - "sitemap-index.xml + robots.txt (IA bienvenues) + RSS"
+  geo:
+    - "public/llms.txt (carte d'identité texte pour moteurs génératifs)"
+    - "FAQ en dur, phrases autoportantes sourcées en données structurées"
+
+direction_artistique:
+  concept: "Le site EST la mer : à midi, écume et sable ; après le couchant, nuit étoilée sur l'eau, reflet de lune. Le thème suit l'horloge de l'appareil, pas un bouton."
+  palettes:
+    jour:
+      bg: "#f4efe4 (sable)"
+      surface: "#fffdf7 (écume)"
+      sea: "#5e9cb0 → #175066"
+      texte: "#16323f (encre de marine)"
+      accent: "#b23a2b (rouge des cirés — « la Rouge »)"
+      or: "#8a5a14 / #e6b563 sur mer"
+    nuit:
+      bg: "#081120 (abysses)"
+      surface: "#0d1b2e"
+      sea: "#123452 → #071a2e"
+      texte: "#e8eef3 (clair de lune)"
+      accent: "#ef8873 (corail de feu)"
+      or: "#e4c07a / #ecc98c"
+  typographies:
+    titrage: "Fraunces (variable, serif à empattements souples — l'aquarelle et la chanson)"
+    texte: "Work Sans (lisible, neutre, moderne)"
+    chargement: "Fontsource auto-hébergé, subsets unicode-range, woff2"
+  motifs: ["vagues SVG dérivantes", "3 couches d'étoiles CSS scintillantes", "lune + reflet", "aquarelle de mer générée en fond de hero (clin d'œil au projet Aquarel)", "voile rouge récurrente (favicon, hero, accents)"]
+  animations: "lentes et calmes, désactivées par prefers-reduced-motion"
+
+sections_page_unique:
+  - { id: accueil,      but: "immersion : mer, voix, CTA écouter/booking" }
+  - { id: biographie,   but: "bio d'origine + ports + 2 clips YouTube lite" }
+  - { id: ecouter,      but: "les 10 MP3, lecteur unique amélioré (progressif)" }
+  - { id: album,        but: "Irish Ties : pochette, tracklist 12 titres, liens d'achat" }
+  - { id: spectacles,    but: "photos de scène P1–P5 + extraits du spectacle" }
+  - { id: presse,        but: "coupures & affiches numérisées de l'ancienne /presse/" }
+  - { id: aquarel,      but: "projet en souscription + PDF (placeholder à livrer)" }
+  - { id: questions,    but: "FAQ GEO — réponses citables par les IA" }
+  - { id: contact,      but: "booking : mailto + tel + YouTube, zéro formulaire" }
+
+livrables_attendus:
+  - "repo complet (code + docs + scripts)"
+  - "tâches testées et tracées (tasks.md)"
+  - "docs maintenance contenu pour l'artiste/son entourage"

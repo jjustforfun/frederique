@@ -1,0 +1,360 @@
+---
+/**
+ * Playlist « Écouter » — amélioration progressive :
+ *   • Sans JS : chaque titre embarque un <audio controls> natif (déjà 100 % utilisable).
+ *   • Avec JS : les lecteurs natifs sont masqués au profit d’un lecteur unique
+ *     (barre flottante, piste préc./suiv., MediaSession sur mobile).
+ * Les fichiers MP3 sont ceux de l’ancienne site (voir data/media.ts).
+ */
+import { TRACKS, trackUrl } from '../data/tracks';
+import { media, MEDIA } from '../data/media';
+---
+
+<div class="player" data-player>
+  <ol class="tracks">
+    {
+      TRACKS.map((t, i) => (
+        <li class="track card" data-track={t.id}>
+          <button
+            type="button"
+            class="track__btn"
+            data-src={trackUrl(t)}
+            data-title={t.title}
+            data-index={i}
+            aria-label={t.kind === 'interview' ? `Écouter l’interview : ${t.title}` : `Écouter : ${t.title}`}
+          >
+            <span class="track__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <span class="track__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+            </span>
+            <span class="track__meta">
+              <strong>{t.title}</strong>
+              {t.note && <small>{t.note}</small>}
+            </span>
+            <span class="track__kind">{t.kind === 'interview' ? 'Radio' : 'Chant'}</span>
+          </button>
+          <audio class="track__fallback" controls preload="none" src={trackUrl(t)}>
+            Votre navigateur ne prend pas en charge la lecture audio.
+            <a href={trackUrl(t)}>Télécharger « {t.title} » (MP3)</a>
+          </audio>
+        </li>
+      ))
+    }
+  </ol>
+
+  <figure class="france-bleu card">
+    <img
+      src={media(MEDIA.presse.franceBleuLogo)}
+      width={300}
+      height={300}
+      loading="lazy"
+      decoding="async"
+      alt="Logo de France Bleu Breizh Izel"
+    />
+    <figcaption>
+      L’interview de Frédérique sur <strong>France Bleu Breizh Izel</strong> (juillet 2016) est
+      dans la playlist, tout en haut — entre la mer et les ondes courtes.
+    </figcaption>
+  </figure>
+
+  <!-- Barre de lecture flottante (injectée par le JS, visible uniquement pendant la lecture) -->
+  <template data-dock>
+    <div class="dock" role="region" aria-label="Lecteur audio">
+      <div class="dock__inner card">
+        <p class="dock__title" data-dock-title>—</p>
+        <div class="dock__controls">
+          <button type="button" data-prev aria-label="Titre précédent">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14M20 5.5v13l-10-6.5zM4 5v14" fill="currentColor" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+          <button type="button" data-toggle aria-label="Lecture ou pause" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true" data-icon-play><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true" data-icon-pause style="display:none"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg>
+          </button>
+          <button type="button" data-next aria-label="Titre suivant">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 5v14M4 5.5v13l10-6.5zM20 5v14" fill="currentColor" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+          <button type="button" data-stop aria-label="Fermer le lecteur">✕</button>
+        </div>
+        <div class="dock__seek">
+          <span data-time-current>0:00</span>
+          <input type="range" min="0" max="1000" value="0" step="1" data-seek aria-label="Position dans le morceau" />
+          <span data-time-total>0:00</span>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>
+
+<style>
+  .tracks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  }
+
+  .track { padding: 0.35rem; }
+
+  .track__btn {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    background: none;
+    border: 0;
+    border-radius: 10px;
+    text-align: start;
+    color: var(--text);
+  }
+
+  .track__btn:hover { background: color-mix(in srgb, var(--foam) 55%, transparent); }
+
+  .track__n {
+    font-family: 'Fraunces Variable', Georgia, serif;
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .track__icon {
+    display: grid;
+    place-items: center;
+    width: 2.15rem;
+    height: 2.15rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    transition: scale 0.15s ease;
+  }
+
+  .track__btn:hover .track__icon { scale: 1.08; }
+  .track__icon svg { width: 1.15rem; height: 1.15rem; }
+
+  .track__meta {
+    display: grid;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .track__meta strong { font-size: 0.98rem; }
+  .track__meta small { color: var(--muted); font-size: 0.78rem; }
+
+  .track__kind {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--line);
+    padding: 0.25em 0.6em;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  /* Pas de JS ? On garde les lecteurs natifs, cachés par la suite « améliorée ». */
+  .track__btn { display: none; }
+  .html-js .track__btn { display: grid; }
+  .html-js .track__fallback { display: none; }
+
+  .track__fallback {
+    width: 100%;
+    padding: 0.6rem 0.9rem;
+    border-radius: 10px;
+  }
+
+  .france-bleu {
+    margin: 1.4rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .france-bleu img {
+    width: clamp(64px, 12vw, 104px);
+    height: auto;
+    block-size: 100%;
+    object-fit: cover;
+    border-radius: 0 0 0 var(--radius);
+  }
+
+  .france-bleu figcaption {
+    font-size: 0.9rem;
+    padding-inline: 1.2rem 1.2rem;
+    color: var(--muted);
+    margin: 0;
+  }
+</style>
+
+<script>
+  /**
+   * Lecteur unique, en douceur : un <audio> partagé, une barre flottante,
+   * zéro dépendance. Les boutons .track__btn pilotent la playlist.
+   */
+  (() => {
+    const root = document.querySelector<HTMLElement>('[data-player]');
+    if (!root) return;
+
+    const tpl = root.querySelector<HTMLTemplateElement>('[data-dock]')!;
+    document.body.appendChild(tpl.content.cloneNode(true));
+    const dock = document.querySelector<HTMLElement>('.dock')!;
+
+    const audio = document.createElement('audio');
+    audio.preload = 'none';
+    root.append(audio);
+
+    const tracks = Array.from(root.querySelectorAll<HTMLButtonElement>('.track__btn'));
+    let index = -1;
+
+    const title = dock.querySelector<HTMLElement>('[data-dock-title]')!;
+    const toggle = dock.querySelector<HTMLButtonElement>('[data-toggle]')!;
+    const playIcon = toggle.querySelector<SVGElement>('[data-icon-play]')!;
+    const pauseIcon = toggle.querySelector<SVGElement>('[data-icon-pause]')!;
+    const seek = dock.querySelector<HTMLInputElement>('[data-seek]')!;
+    const tCur = dock.querySelector<HTMLElement>('[data-time-current]')!;
+    const tTot = dock.querySelector<HTMLElement>('[data-time-total]')!;
+
+    const fmt = (s: number) =>
+      Number.isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}` : '0:00';
+
+    function select(i: number, autoplay = true) {
+      index = (i + tracks.length) % tracks.length;
+      const t = tracks[index]!;
+      audio.src = t.dataset.src!;
+      title.textContent = t.dataset.title!;
+      dock.classList.add('dock--on');
+      tracks.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+      t.setAttribute('aria-pressed', 'true');
+      if (autoplay) void audio.play();
+    }
+
+    function setPlaying(on: boolean) {
+      playIcon.style.display = on ? 'none' : '';
+      pauseIcon.style.display = on ? '' : 'none';
+      toggle.setAttribute('aria-pressed', String(on));
+    }
+
+    tracks.forEach((b, i) => b.addEventListener('click', () => {
+      if (i === index && !audio.paused) { audio.pause(); return; }
+      select(i);
+    }));
+
+    dock.querySelector('[data-prev]')!.addEventListener('click', () => select(index - 1));
+    dock.querySelector('[data-next]')!.addEventListener('click', () => select(index + 1));
+    dock.querySelector('[data-stop]')!.addEventListener('click', () => {
+      audio.pause();
+      audio.removeAttribute('src');
+      dock.classList.remove('dock--on');
+      tracks.forEach((b) => b.removeAttribute('aria-pressed'));
+    });
+    toggle.addEventListener('click', () => (audio.paused ? audio.play() : audio.pause()));
+
+    seek.addEventListener('input', () => {
+      if (audio.duration) audio.currentTime = (Number(seek.value) / 1000) * audio.duration;
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      const d = audio.duration || 0;
+      seek.value = d ? String(Math.round((audio.currentTime / d) * 1000)) : '0';
+      tCur.textContent = fmt(audio.currentTime);
+    });
+    audio.addEventListener('loadedmetadata', () => { tTot.textContent = fmt(audio.duration); });
+    audio.addEventListener('play', () => {
+      setPlaying(true);
+      // Commandes système (écran de verrouillage / casque)
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: tracks[index]?.dataset.title ?? 'Frédérique',
+          artist: 'Frédérique',
+          album: 'frederique-sur-mer.fr',
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', () => select(index - 1));
+        navigator.mediaSession.setActionHandler('nexttrack', () => select(index + 1));
+        navigator.mediaSession.setActionHandler('play', () => audio.play());
+        navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+      }
+    });
+    audio.addEventListener('pause', () => setPlaying(false));
+    audio.addEventListener('ended', () => select(index + 1));
+    audio.addEventListener('error', () => {
+      title.textContent = 'La mer est indisponible… réessayez';
+      setPlaying(false);
+    });
+  })();
+</script>
+
+<style is:global>
+  /* La barre flottante vit dans le DOM global (clonée depuis <template>) */
+  .dock {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0.75rem;
+    z-index: 60;
+    display: grid;
+    place-items: end center;
+    padding-inline: var(--gutter);
+    translate: 0 140%;
+    transition: translate 0.35s cubic-bezier(0.2, 0.9, 0.25, 1);
+    pointer-events: none;
+  }
+
+  .dock--on { translate: 0 0; pointer-events: auto; }
+
+  .dock__inner {
+    width: min(100%, 46rem);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.45rem 1rem;
+    padding: 0.7rem 1rem 0.8rem;
+    border-radius: 16px;
+  }
+
+  .dock__title {
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dock__controls { display: flex; gap: 0.3rem; align-items: center; }
+
+  .dock__controls button {
+    display: grid;
+    place-items: center;
+    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 50%;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+  }
+
+  .dock__controls button:hover { background: color-mix(in srgb, var(--foam) 60%, transparent); }
+  .dock__controls svg { width: 1.25rem; height: 1.25rem; }
+  .dock__controls [data-toggle] { background: var(--accent); color: var(--accent-contrast); }
+
+  .dock__seek {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+
+  .dock__seek input[type='range'] { width: 100%; accent-color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dock { transition: none; }
+  }
+</style>

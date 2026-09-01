@@ -1,0 +1,80 @@
+---
+/**
+ * FAQ — utile aux humains, citable par les moteurs génératifs (GEO).
+ * Accordéon natif <details> : accessible au clavier sans une ligne de JS.
+ */
+import { FAQ } from '../data/faq';
+---
+
+<section id="questions" class="faq" aria-labelledby="faq-title">
+  <div class="wrap faq__grid">
+    <header class="section-head faq__head">
+      <p class="kicker">À quai, les questions</p>
+      <h2 id="faq-title">Questions fréquentes</h2>
+    </header>
+
+    <div class="faq__list">
+      {FAQ.map((item, i) => (
+        <details class="faq__item card" open={i === 0}>
+          <summary>
+            <h3>{item.q}</h3>
+          </summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+
+  <style>
+    .faq__grid {
+      display: grid;
+      gap: clamp(1.5rem, 4vw, 3rem);
+    }
+
+    @media (min-width: 56rem) {
+      .faq__grid { grid-template-columns: 0.7fr 1.3fr; align-items: start; }
+      .faq__head { position: sticky; top: calc(var(--header-h) + 1.5rem); }
+      .faq__head .section-head::after { margin-inline-end: auto; }
+    }
+
+    .faq__list { display: grid; gap: 0.8rem; }
+
+    .faq__item { padding: 0; overflow: hidden; }
+
+    .faq__item summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.95rem 1.2rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .faq__item summary::-webkit-details-marker { display: none; }
+
+    .faq__item summary::after {
+      content: '+';
+      font-family: 'Fraunces Variable', Georgia, serif;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--accent);
+      transition: rotate 0.2s ease;
+    }
+
+    .faq__item[open] summary::after { rotate: 45deg; }
+
+    .faq__item h3 {
+      margin: 0;
+      font-size: 1.02rem;
+      font-weight: 600;
+    }
+
+    .faq__item p {
+      margin: 0;
+      padding: 0 1.2rem 1.05rem;
+      color: var(--muted);
+      max-width: 65ch;
+    }
+  </style>
+</section>

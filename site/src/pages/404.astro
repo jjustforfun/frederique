@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Cap hors bord — 404 · Frédérique"
+  description="Cette page a dérivé avec la marée. Revenez au port : accueil du site de Frédérique, chanteuse de chants de marins."
+>
+  <main class="lost sea wrap" id="contenu">
+    <div class="stars" aria-hidden="true"><i></i></div>
+    <p class="lost__code">404</p>
+    <h1>Cap hors bord</h1>
+    <p>
+      Cette page a dérivé avec la marée. Le bateau est amarré là où commencent les
+      chants — retour à bord ?
+    </p>
+    <p><a class="btn btn--primary" href="/">Revenir au rivage</a></p>
+    <style>
+      .lost {
+        display: grid;
+        justify-items: start;
+        align-content: center;
+        gap: 0.4rem;
+        min-height: 62svh;
+        padding-block: 4rem;
+        color: #eef4f6;
+      }
+      .lost a.btn { color: var(--accent-contrast); }
+      .lost__code {
+        margin: 0;
+        font-family: 'Fraunces Variable', Georgia, serif;
+        font-size: clamp(3.5rem, 10vw, 6rem);
+        line-height: 1;
+        color: var(--gold);
+      }
+    </style>
+  </main>
+</Layout>
